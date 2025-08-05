@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { request, Request, Response } from 'express'
 import { UserService } from '../services/UserService'
 
 export class UserController {
@@ -17,6 +17,10 @@ export class UserController {
             return response.status(400).json({ message: 'Bad request! Name obrigatório'})
         }
 
+        else if(!user.email){
+            return response.status(400).json({message: 'email nao informado'})
+        }
+
         this.userService.createUser(user.name, user.email)
         return response.status(201).json({ message: 'Usuário criado'})
     }
@@ -25,4 +29,10 @@ export class UserController {
         const users = this.userService.getAllUsers()
         return response.status(200).json( users )
     } 
+
+    deleteUsers = (request:Request, response:Response) => {
+         const user = request.body
+        const userDelete = this.userService.deleteUsers(user.name, user.email)
+        return response.status(200).json({ message: 'Usuário deletado', userDelete})
+    }
 }
