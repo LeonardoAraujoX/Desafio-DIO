@@ -1,41 +1,57 @@
-export interface User {
-    name: string
-    email: string
-}
-
-const db = [
-    {
-        name: "Joana",
-        email: "joana@dio.com",
-    }
-]
+import { UserRepository } from '../repositories/UserRepository';
+import { AppDataSource } from "../database";
+import { User } from '../entities/User';
+import { sign } from 'jsonwebtoken';
 
 export class UserService {
-    db: User[]
-
-    constructor(
-        database = db
-    ){
-        this.db = database
+   
+    private userRepository:UserRepository
+    
+    constructor( userRepository = new UserRepository(AppDataSource.manager)){
+       this.userRepository=userRepository
     }
 
-    createUser = (name: string, email: string) => {
-        const user = {
-            name,
-            email
-        }
-
-        this.db.push(user)
-        console.log('DB atualizado', this.db)
+   createUser = async (name: string, email: string, password:string): Promise<User> => {
+      const user = new User(name, email, password)
+      return await this.userRepository.createUser(user as User)
+    }
+   getUser = async (id_user:string):Promise<User | null> =>{
+      return await this.userRepository.getUser(id_user)
     }
 
-    getAllUsers = () => {
-        return this.db
+   getAuthentication= async (email:string, password:string): Promise<User | null> => {
+      return await this.userRepository.getUserByEmailAndPassword(email, password )
     }
 
-    deleteUsers = (name:string, email:string)=> {
-        this.db = this.db.filter(user => user.name !== name || user.email !== email)
-        console.log('usuario removido! ')
+    getToken = async (email:string, password:string): Promise<string>=> {
+      const user = await this.getAuthentication(email, password)
+
+      if (!user) {
+        throw new Error("Usuário não encontrado");
+         }
+
+      const tokenData = {
+         name:user?.name,
+         email:user?.email
+      }
+
+      const tokenKey='dio'
+
+      const tokenOptions ={
+         subject:user?.id_user
+      }
+       const token = sign(tokenData,tokenKey,tokenOptions)
+       return token
+    }
+
+   deleteUser = async (email:string): Promise<void>=> {
+      await this.userRepository.deleteUser(email)
+        
      }
+
+   updateUser= async (email:string, password:string): Promise<void>=> {
+      await this.userRepository.updateUser(email,password)
+   }
 }
+
 
