@@ -35,7 +35,7 @@ export class UserService {
          email:user?.email
       }
 
-      const tokenKey='dio'
+      const tokenKey= process.env.TOKEN_SECRET_KEY as string
 
       const tokenOptions ={
          subject:user?.id_user

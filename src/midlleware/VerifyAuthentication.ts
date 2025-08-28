@@ -7,7 +7,7 @@ export function VerifyAuthentication(request: Request, response: Response, next:
     if(authToken){
         const [, token] = authToken.split(" ")
         try{
-            const { sub } = verify(token, 'dio') as { sub: string };
+            const { sub } = verify(token, process.env.TOKEN_SECRET_KEY as string) as { sub: string };
             (request as any).id_user = sub;
             return next()
 

@@ -1,9 +1,12 @@
+import 'dotenv/config';
 import "reflect-metadata";
 import { AppDataSource } from './database';
 import express, { Request, Response } from 'express';
 import { router } from './routes';
 
 const server = express();
+
+
 
 AppDataSource.initialize()
     .then(()=>{
