@@ -19,12 +19,20 @@ export class UserRepository {
          })
       }
 
-      deleteUser = async(email:string):Promise<void> => {
-         await this.manager.delete(User, { email})
+      deleteUser = async (email: string): Promise<User | null> => {
+         const user = await this.manager.findOne(User, { where: { email } });
+      if (!user) {
+       return null;
       }
+      await this.manager.delete(User, { email });
+      return user;
+}
 
-      updateUser = async(email:string,password:string):Promise<void> => {
+
+      updateUser = async(email:string,password:string):Promise<User | null> => {
          await this.manager.update(User, {email}, {password})
+         const updatedUser = await this.manager.findOne(User, { where: { email } });
+         return updatedUser;
       }
 
       getUserByEmailAndPassword = async(email:string, password:string): Promise<User | null> => {

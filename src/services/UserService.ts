@@ -44,13 +44,15 @@ export class UserService {
        return token
     }
 
-   deleteUser = async (email:string): Promise<void>=> {
-      await this.userRepository.deleteUser(email)
-        
-     }
+   async deleteUser(email: string): Promise<User | null> {
+    const user = await this.userRepository.deleteUser(email)
+    return user
+}
 
-   updateUser= async (email:string, password:string): Promise<void>=> {
-      await this.userRepository.updateUser(email,password)
+
+   updateUser= async (email:string, password:string): Promise<User | null>=> {
+     const user =  await this.userRepository.updateUser(email,password)
+      return user
    }
 }
 
